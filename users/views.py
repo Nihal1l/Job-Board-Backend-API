@@ -10,10 +10,14 @@ from datetime import timedelta
 import secrets
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+# Remove this:
+from .serializers import UserCreateSerializer, UserCreateSerializer, UserSerializer
 
+# Use Djoser's:
+from djoser.serializers import UserCreateSerializer
 from .models import User, EmailVerificationToken, JobSeekerProfile, EmployerProfile, Resume
 from .serializers import (
-    UserRegistrationSerializer, UserSerializer, 
+    UserCreateSerializer, UserSerializer, 
     JobSeekerProfileSerializer, EmployerProfileSerializer, ResumeSerializer
 )
 from utils.email_service import send_verification_email
@@ -25,11 +29,11 @@ class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
     
     @swagger_auto_schema(
-        request_body=UserRegistrationSerializer,
+        request_body=UserCreateSerializer,
         responses={201: UserSerializer(), 400: 'Bad Request'}
     )
     def post(self, request):
-        serializer = UserRegistrationSerializer(data=request.data)
+        serializer = UserCreateSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             
