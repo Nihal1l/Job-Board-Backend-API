@@ -15,10 +15,9 @@ from .serializers import UserCreateSerializer, UserCreateSerializer, UserSeriali
 
 # Use Djoser's:
 from djoser.serializers import UserCreateSerializer
-from .models import User, EmailVerificationToken, JobSeekerProfile, EmployerProfile, Resume
+from .models import User, EmailVerificationToken
 from .serializers import (
-    UserCreateSerializer, UserSerializer, 
-    JobSeekerProfileSerializer, EmployerProfileSerializer, ResumeSerializer
+    UserCreateSerializer, UserSerializer
 )
 from utils.email_service import send_verification_email
 
@@ -138,44 +137,3 @@ class ProfileView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
-class JobSeekerProfileView(generics.RetrieveUpdateAPIView):
-    """Job seeker profile management"""
-    
-    serializer_class = JobSeekerProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    
-    def get_object(self):
-        return self.request.user.job_seeker_profile
-
-
-class EmployerProfileView(generics.RetrieveUpdateAPIView):
-    """Employer profile management"""
-    
-    serializer_class = EmployerProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    
-    def get_object(self):
-        return self.request.user.employer_profile
-
-
-class ResumeListCreateView(generics.ListCreateAPIView):
-    """List and create resumes"""
-    
-    serializer_class = ResumeSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    
-    def get_queryset(self):
-        return Resume.objects.filter(job_seeker=self.request.user)
-    
-    def perform_create(self, serializer):
-        serializer.save(job_seeker=self.request.user)
-
-
-class ResumeDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """Retrieve, update, delete resume"""
-    
-    serializer_class = ResumeSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    
-    def get_queryset(self):
-        return Resume.objects.filter(job_seeker=self.request.user)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from .models import User, JobSeekerProfile, EmployerProfile, Resume
+from .models import User
 from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer, UserSerializer as BaseUserSerializer
 
 # class UserCreateSerializer(serializers.ModelSerializer):
@@ -32,7 +32,6 @@ from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer,
 
 class UserCreateSerializer(BaseUserCreateSerializer):
     class Meta(BaseUserCreateSerializer.Meta):
-        model = User
         fields = ('id', 'email', 'password', 'first_name', 'last_name')
         
 
@@ -53,32 +52,32 @@ class UserCreateSerializer(BaseUserCreateSerializer):
 
 class UserSerializer(BaseUserSerializer):
     class Meta(BaseUserSerializer.Meta):
-        model = User
+        ref_name = 'CustomUser'
         fields = ('id', 'email', 'first_name', 'last_name')
         
-class ResumeSerializer(serializers.ModelSerializer):
-    """Serializer for resume"""
+# class ResumeSerializer(serializers.ModelSerializer):
+#     """Serializer for resume"""
     
-    class Meta:
-        model = Resume
-        fields = '__all__'
-        read_only_fields = ('job_seeker', 'uploaded_at', 'updated_at')
+#     class Meta:
+#         model = Resume
+#         fields = '__all__'
+#         read_only_fields = ('job_seeker', 'uploaded_at', 'updated_at')
 
-class JobSeekerProfileSerializer(serializers.ModelSerializer):
-    """Serializer for job seeker profile"""
+# class JobSeekerProfileSerializer(serializers.ModelSerializer):
+#     """Serializer for job seeker profile"""
     
-    class Meta:
-        model = JobSeekerProfile
-        fields = '__all__'
-        read_only_fields = ('user', 'created_at', 'updated_at')
+#     class Meta:
+#         model = JobSeekerProfile
+#         fields = '__all__'
+#         read_only_fields = ('user', 'created_at', 'updated_at')
 
 
-class EmployerProfileSerializer(serializers.ModelSerializer):
-    """Serializer for employer profile"""
+# class EmployerProfileSerializer(serializers.ModelSerializer):
+#     """Serializer for employer profile"""
     
-    class Meta:
-        model = EmployerProfile
-        fields = '__all__'
-        read_only_fields = ('user', 'created_at', 'updated_at')
+#     class Meta:
+#         model = EmployerProfile
+#         fields = '__all__'
+#         read_only_fields = ('user', 'created_at', 'updated_at')
 
 
