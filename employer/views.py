@@ -12,6 +12,7 @@ from .filters import JobFilter
 from .permissions import IsEmployerOrReadOnly
 from job_seeker.models import SavedJob
 from rest_framework.viewsets import ModelViewSet
+from api.permissions import IsAdminOrReadOnly
 
 class JobCategoryListView(generics.ListAPIView):
     """List all job categories"""
@@ -71,7 +72,7 @@ class MyJobsViewSet(ModelViewSet):
     """List jobs posted by current employer"""
     
     serializer_class = JobSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsEmployerOrReadOnly]
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['created_at']
     
