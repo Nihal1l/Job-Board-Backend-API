@@ -6,6 +6,14 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 from django.conf import settings
 
+from django.db.models.signals import post_save, pre_save, m2m_changed, post_delete
+from django.dispatch import receiver
+from django.core.mail import send_mail
+from employer.models import *
+from users.models import User
+from job_seeker.models import *
+
+
 class JobCategory(models.Model):
     """Job categories/industries"""
     
@@ -57,4 +65,28 @@ class Job(models.Model):
     
     def __str__(self):
         return self.title
+    
+
+
+
+
+
+
+@receiver(post_save, sender=Job)
+def notify_applicant_on_apply(sender, instance, created, **kwargs):
+    if created:
+        employer_email = instance.user.email
+        job_title = instance.job.title
+        
+        try:
+            send_mail(
+                subject=f'New Applicant for : {job_title}',
+                message=f'New Applicant for {job_title} at has been received successfully.',
+                from_email=settings.DEFAULT_FROM_EMAIL,  # or 'noreply@yourjobboard.com'
+                recipient_list=[employer_email],  # ✅ Must be a list!
+                fail_silently=False,
+            )
+            print(f"✅ Email sent to {employer_email}")
+        except Exception as e:
+            print(f"❌ Failed to send email: {e}")           
     
