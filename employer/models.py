@@ -73,7 +73,7 @@ class Job(models.Model):
 
 
 @receiver(post_save, sender=Job)
-def notify_applicant_on_apply(sender, instance, created, **kwargs):
+def notify_employer_on_applied_a_candidate(sender, instance, created, **kwargs):
     if created:
         employer_email = instance.user.email
         job_title = instance.job.title
