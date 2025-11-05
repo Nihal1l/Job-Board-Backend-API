@@ -7,7 +7,7 @@ from django.db.models.signals import post_save, pre_save, m2m_changed, post_dele
 from django.dispatch import receiver
 from django.core.mail import send_mail
 from employer.models import *
-from users.models import User
+from users.models import *
 from job_seeker.models import *
 
 
@@ -22,7 +22,8 @@ class appliedJobs(models.Model):
         related_name='applied_jobs'
     )
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applications')
-    uploaded_resume = models.FileField(upload_to='resumes/', null=True, blank=True)
+    uploaded_resume = models.FileField(upload_to='resumes/', null=True, blank=True)  # Custom resume for this application
+    use_profile_resume = models.BooleanField(default=False)  # Flag to use profile resume
     applied_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
         max_length=20,
@@ -41,6 +42,12 @@ class appliedJobs(models.Model):
         verbose_name = 'Applied Job'
         verbose_name_plural = 'Applied Jobs'
         ordering = ['-applied_at']
+
+    def get_resume(self):
+        """Get the resume for this application"""
+        if self.use_profile_resume and hasattr(self.user, 'profile'):
+            return self.user.profile.resume
+        return self.uploaded_resume    
 
     def __str__(self):
         return f"{self.user.email} applied for {self.job.title}"

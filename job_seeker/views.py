@@ -34,19 +34,7 @@ class AppliedJobsViewSet(ModelViewSet):
 class AppliedJobsListViewSet(ModelViewSet):
     serializer_class = AppliedJobsSerializer
     permission_classes = [IsApplicantAuthorOrReadonly]
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    def perform_update(self, serializer):
-        serializer.save(user=self.request.user)
+    http_method_names = ['get', 'delete']
 
     def get_queryset(self):
         return appliedJobs.objects.filter(user=self.request.user)
-
-    # def create(self, request, *args, **kwargs):
-    #     """Only authenticated admin can create product"""
-    #     return super().create(request, *args, **kwargs)
-    
-    # def get_serializer_context(self):
-    #     return {'job_id': self.kwargs.get('job_pk')}

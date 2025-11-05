@@ -9,8 +9,6 @@ from .models import JobCategory, Job
 from job_seeker.models import appliedJobs
 from django.contrib.auth import get_user_model
 
-
-
 class SimpleUserSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField(
         method_name='get_current_user_name')
@@ -29,7 +27,7 @@ class AppliedCandidatesSerializer(serializers.ModelSerializer):
     class Meta:
         model = appliedJobs
         fields = '__all__'
-        read_only_fields = ('job', 'applied_at', 'user', 'uploaded_resume')  
+        read_only_fields = ('job', 'applied_at', 'user', 'uploaded_resume', 'use_profile_resume')  
     
     def get_user(self, obj):
         return SimpleUserSerializer(obj.user).data
@@ -61,28 +59,7 @@ class JobSerializer(serializers.ModelSerializer):
     def get_user(self, obj):
         return SimpleUserSerializer(obj.user).data    
     
-    # def get_is_saved(self, obj):
-    #     request = self.context.get('request')
-    #     if request and request.user.is_authenticated:
-    #         return SavedJob.objects.filter(job_seeker=request.user, job=obj).exists()
-    #     return False
 
 
-# class JobListSerializer(serializers.ModelSerializer):
-#     """Lightweight serializer for job listings"""
-    
-#     company_name = serializers.CharField(read_only=True)
-#     category_name = serializers.CharField(source='category.name', read_only=True)
-#     user = serializers.SerializerMethodField(method_name='get_user')
-#     class Meta:
-#         model = Job
-#         fields = (
-#             'id', 'title', 'company_name', 'category_name', 'job_type',
-#             'location','created_at'
-#         )
-#         read_only_fields = ('user','created_at', 'updated_at', 'published_at')
-
-#     def get_user(self, obj):
-#         return SimpleUserSerializer(obj.user).data    
 
 

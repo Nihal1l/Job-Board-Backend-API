@@ -1,4 +1,3 @@
-from django.contrib.auth.models import AbstractUser, BaseUserManager,  PermissionsMixin
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 import uuid
@@ -8,6 +7,7 @@ from django.utils import timezone
 import os
 from dotenv import load_dotenv
 from users.managers import CustomUserManager
+from django.conf import settings
 load_dotenv()
 
 
@@ -67,3 +67,14 @@ class EmailVerificationToken(models.Model):
     
     def __str__(self):
         return f"Token for {self.user.email}"
+    
+
+
+class Profile(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    resume = models.FileField(upload_to='resumes/', blank=True, null=True)
+    
+    def __str__(self):
+        return f"Profile of {self.user.email}"
+

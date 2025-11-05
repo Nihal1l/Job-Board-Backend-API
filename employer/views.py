@@ -1,15 +1,14 @@
 from django.shortcuts import render
 from rest_framework import generics, permissions, status, filters
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
-from django.utils import timezone
+from .filters import JobCategoryFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from .models import JobCategory, Job
 from .serializers import JobCategorySerializer, JobSerializer, AppliedCandidatesSerializer
 from job_seeker.serializers import AppliedJobsSerializer
-from .filters import JobFilter
 from .permissions import IsEmployerOrReadOnly, IsEmployer
 from job_seeker.models import *
 from rest_framework.viewsets import ModelViewSet
@@ -29,7 +28,7 @@ class JobCategoryListView(generics.ListAPIView):
 class JobApplicantsViewSet(ModelViewSet):
     serializer_class = AppliedCandidatesSerializer
     permission_classes = [IsEmployer]
-    http_method_names = ['get', 'put', 'patch', 'delete', 'head', 'options', 'trace']
+    http_method_names = ['get', 'put', 'patch',  'head', 'options', 'trace']
 
     def get_queryset(self):
         return appliedJobs.objects.filter(job_id=self.kwargs.get('job_pk'))
@@ -47,7 +46,8 @@ class MyJobsViewSet(ModelViewSet):
     
     serializer_class = JobSerializer
     permission_classes = [IsEmployerOrReadOnly]
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = JobCategoryFilter
     ordering_fields = ['created_at']
 
     def perform_create(self, serializer):

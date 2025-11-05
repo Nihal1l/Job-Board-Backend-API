@@ -4,17 +4,13 @@ apps/jobs/filters.py
 ===========================================
 """
 
-import django_filters
-from .models import Job
+from django_filters.rest_framework import FilterSet
+from .models import *
 
-
-class JobFilter(django_filters.FilterSet):
-    """Filter for job listings"""
-    
-    category = django_filters.UUIDFilter(field_name='category__id')
-    location = django_filters.CharFilter(lookup_expr='icontains')
-    
+class JobCategoryFilter(FilterSet):
     class Meta:
         model = Job
-        fields = ['category', 'location']
+        fields = {
+            'category_id': ['exact'],
+        }
 
