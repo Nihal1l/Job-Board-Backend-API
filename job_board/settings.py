@@ -41,7 +41,10 @@ SECRET_KEY = 'django-insecure-3&4@wrp4_8_$2ddwkgo=yjqzs&e3y2#9n0t9hphtxt=@q557*j
 DEBUG = True
 
 ### if ready to deploy then DEBUG should be false
-ALLOWED_HOSTS = [".vercel.app","127.0.0.1"]
+# ALLOWED_HOSTS = [".vercel.app","127.0.0.1"]
+ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com", "http://127.0.0.1:8000"]
+
 AUTH_USER_MODEL = 'users.User'
 
 # Application definition
