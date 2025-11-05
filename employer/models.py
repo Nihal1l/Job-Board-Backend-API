@@ -1,12 +1,9 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from users.models import User
 import uuid
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.utils import timezone
 from django.conf import settings
-
-from django.db.models.signals import post_save, pre_save, m2m_changed, post_delete
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import send_mail
 from employer.models import *
@@ -67,7 +64,18 @@ class Job(models.Model):
         return self.title
     
 
+class Review(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+    ratings = models.PositiveIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)])
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return f"Review by {self.user.first_name} on {self.job.title}"
 
 
 

@@ -5,7 +5,7 @@ apps/jobs/serializers.py
 """
 
 from rest_framework import serializers
-from .models import JobCategory, Job
+from .models import JobCategory, Job, Review
 from job_seeker.models import appliedJobs
 from django.contrib.auth import get_user_model
 
@@ -60,6 +60,20 @@ class JobSerializer(serializers.ModelSerializer):
         return SimpleUserSerializer(obj.user).data    
     
 
+class ReviewSerializer(serializers.ModelSerializer):
+    # user = SimpleUserSerializer()
+    user = serializers.SerializerMethodField(method_name='get_user')
 
+    class Meta:
+        model = Review
+        fields = ['id', 'user', 'job', 'ratings', 'comment']
+        read_only_fields = ['user', 'job']
+
+    def get_user(self, obj):
+        return SimpleUserSerializer(obj.user).data
+
+    def create(self, validated_data):
+        job_id = self.context['job_id']
+        return Review.objects.create(job_id=job_id, **validated_data)
 
 

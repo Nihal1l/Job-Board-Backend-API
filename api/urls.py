@@ -13,11 +13,7 @@ job_router = routers.NestedDefaultRouter(
     router, 'jobs', lookup='job')
 job_router.register('applys', AppliedJobsViewSet, basename='job-apply')
 job_router.register('appliedCandidates', JobApplicantsViewSet, basename='appliedCandidate')
-
-# profile_router = routers.NestedDefaultRouter(
-#     router, 'profile', lookup='profile')
-# profile_router.register('deleteResume', ProfileView, basename='deleteResume')
-
+job_router.register('reviews', ReviewViewSet, basename='job/Employer-review')
 
 
 urlpatterns = [

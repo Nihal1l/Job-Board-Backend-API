@@ -1,18 +1,17 @@
 from django.shortcuts import render
-from rest_framework import generics, permissions, status, filters
-from rest_framework.response import Response
+from rest_framework import generics
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import JobCategoryFilter
 from rest_framework.filters import SearchFilter, OrderingFilter
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from .models import JobCategory, Job
-from .serializers import JobCategorySerializer, JobSerializer, AppliedCandidatesSerializer
-from job_seeker.serializers import AppliedJobsSerializer
-from .permissions import IsEmployerOrReadOnly, IsEmployer
+from .models import JobCategory, Job, Review
+from .serializers import JobCategorySerializer, JobSerializer, AppliedCandidatesSerializer, ReviewSerializer
+from .permissions import IsEmployerOrReadOnly, IsEmployer, IsReviewAuthorOrReadonly
 from job_seeker.models import *
 from rest_framework.viewsets import ModelViewSet
-from rest_framework import permissions
+
+
 
 class JobCategoryListView(generics.ListAPIView):
     """List all job categories"""
@@ -61,6 +60,23 @@ class MyJobsViewSet(ModelViewSet):
             return Job.objects.all()
         else:
             return Job.objects.filter(user=self.request.user)
+        
+
+class ReviewViewSet(ModelViewSet):
+    serializer_class = ReviewSerializer
+    permission_classes = [IsReviewAuthorOrReadonly]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def get_queryset(self):
+        return Review.objects.filter(job_id=self.kwargs.get('job_pk'))
+
+    def get_serializer_context(self):
+        return {'job_id': self.kwargs.get('job_pk')}        
 
 
 
