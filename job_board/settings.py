@@ -1,6 +1,7 @@
 from pathlib import Path
 from decouple import config
 import cloudinary
+import dj_database_url
 import cloudinary.uploader
 from datetime import timedelta
 # from cloudinary.utils import cloudinary_url
@@ -116,13 +117,20 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default='postgresql://job_board_db_hgj0_user:0whDe0joLxUnki3kE8HUN3PyQSdrZWoe@dpg-d45opu0dl3ps738irvi0-a.oregon-postgres.render.com/job_board_db_hgj0',
+        conn_max_age=600
+    )
+}
 
 # DATABASES = {
 #     'default': {
