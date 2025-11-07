@@ -20,10 +20,7 @@ class JobCategoryListView(generics.ListAPIView):
     serializer_class = JobCategorySerializer
     permission_classes = [IsEmployerOrReadOnly]
 
-
-
     
-
 class JobApplicantsViewSet(ModelViewSet):
     serializer_class = AppliedCandidatesSerializer
     permission_classes = [IsEmployer]

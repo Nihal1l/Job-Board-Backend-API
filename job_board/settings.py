@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'job_board',
     'job_seeker',
     'employer',
+    'payments', 
     'users',
     "debug_toolbar",
     'django_filters',
@@ -193,9 +194,9 @@ REST_FRAMEWORK = {
     #     'rest_framework.renderers.JSONRenderer',
     #     'rest_framework.renderers.BrowsableAPIRenderer',
     # ],
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ]
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
 }
 
 SIMPLE_JWT = {
@@ -234,3 +235,7 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
 EMAIL_PORT = config('EMAIL_PORT')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+RAZORPAY_KEY_ID = config('RAZORPAY_KEY_ID', default='')
+RAZORPAY_KEY_SECRET = config('RAZORPAY_KEY_SECRET', default='')
+RAZORPAY_WEBHOOK_SECRET = config('RAZORPAY_WEBHOOK_SECRET', default='')

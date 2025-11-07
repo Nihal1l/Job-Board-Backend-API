@@ -1,0 +1,67 @@
+[
+  {
+    "model": "payments.premiumfeature",
+    "pk": 1,
+    "fields": {
+      "name": "Featured Job Listing - 7 Days",
+      "feature_type": "featured_listing",
+      "description": "Boost your job posting visibility for 7 days. Your listing will appear at the top of search results and get highlighted with a premium badge, attracting 3x more qualified candidates.",
+      "price": "299.00",
+      "duration_days": 7,
+      "is_active": true,
+      "created_at": "2024-01-15T10:30:00Z"
+    }
+  },
+  {
+    "model": "payments.premiumfeature",
+    "pk": 2,
+    "fields": {
+      "name": "Featured Job Listing - 30 Days",
+      "feature_type": "featured_listing",
+      "description": "Premium visibility for a full month. Your job posting stays at the top with enhanced features including priority placement, featured badge, and extended reach to passive job seekers.",
+      "price": "899.00",
+      "duration_days": 30,
+      "is_active": true,
+      "created_at": "2024-01-15T10:35:00Z"
+    }
+  },
+  {
+    "model": "payments.premiumfeature",
+    "pk": 3,
+    "fields": {
+      "name": "Advanced Recruitment Tools Suite",
+      "feature_type": "advanced_tools",
+      "description": "Unlock powerful recruitment features including AI-powered candidate matching, advanced filtering by skills and experience, bulk candidate messaging, resume parsing, and detailed candidate analytics dashboard.",
+      "price": "1499.00",
+      "duration_days": 90,
+      "is_active": true,
+      "created_at": "2024-01-15T10:40:00Z"
+    }
+  },
+  {
+    "model": "payments.premiumfeature",
+    "pk": 4,
+    "fields": {
+      "name": "Bulk Job Posting Package",
+      "feature_type": "bulk_posting",
+      "description": "Post up to 50 jobs simultaneously with CSV upload capability. Includes job templates, auto-posting across multiple platforms, and centralized application management. Perfect for recruitment agencies and growing companies.",
+      "price": "2499.00",
+      "duration_days": 60,
+      "is_active": true,
+      "created_at": "2024-01-15T10:45:00Z"
+    }
+  },
+  {
+    "model": "payments.premiumfeature",
+    "pk": 5,
+    "fields": {
+      "name": "Advanced Analytics & Insights",
+      "feature_type": "analytics",
+      "description": "Comprehensive hiring analytics with real-time dashboards showing application trends, candidate source tracking, time-to-hire metrics, conversion rates, and competitive salary insights. Export custom reports in PDF and Excel formats.",
+      "price": "1999.00",
+      "duration_days": 90,
+      "is_active": true,
+      "created_at": "2024-01-15T10:50:00Z"
+    }
+  }
+]
