@@ -49,8 +49,13 @@ class JobCategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class JobSerializer(serializers.ModelSerializer):
-    category_name = serializers.CharField(source='category.name', read_only=True)
+    category = serializers.SlugRelatedField(
+        slug_field='name', 
+        queryset=JobCategory.objects.all(),
+        help_text="Select a Job Category"
+    )
     user = serializers.SerializerMethodField(method_name='get_user')
+
     class Meta:
         model = Job
         fields = '__all__'

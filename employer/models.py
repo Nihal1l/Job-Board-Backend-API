@@ -33,8 +33,8 @@ class Job(models.Model):
     settings.AUTH_USER_MODEL, 
     on_delete=models.CASCADE, 
     related_name='posted_jobs',
-    null=True,  # Add this temporarily
-    blank=True  # Add this temporarily
+    null=True,  
+    blank=True  
 )
     category = models.ForeignKey(
         JobCategory, 
@@ -84,7 +84,7 @@ class Review(models.Model):
 def notify_employer_on_applied_a_candidate(sender, instance, created, **kwargs):
     if created:
         employer_email = instance.user.email
-        job_title = instance.job.title
+        job_title = instance.title
         
         try:
             send_mail(
