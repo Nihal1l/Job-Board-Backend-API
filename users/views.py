@@ -70,4 +70,24 @@ class ProfileView(ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
+from rest_framework.views import APIView
+from .utils import send_activation_helper
 
+class ResendActivationView(APIView):
+    """Custom view to resend activation email"""
+    permission_classes = [permissions.AllowAny]
+
+    @swagger_auto_schema(request_body=ResendActivationSerializer)
+    def post(self, request):
+        serializer = ResendActivationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        email = serializer.validated_data['email']
+        user = User.objects.get(email=email)
+        
+        if send_activation_helper(user):
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {"detail": "Failed to send email"}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

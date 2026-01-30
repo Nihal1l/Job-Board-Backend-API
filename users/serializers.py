@@ -22,6 +22,20 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ('id', 'resume', 'user')
         read_only_fields = ('user',)
 
+
+class ResendActivationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        from .models import User
+        try:
+            user = User.objects.get(email=value)
+            if user.is_active:
+                raise serializers.ValidationError("This account is already active.")
+            return value
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User with this email does not exist.")
+
         
 
 

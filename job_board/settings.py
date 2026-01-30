@@ -1,50 +1,24 @@
 from pathlib import Path
 from decouple import config
-import cloudinary
 import dj_database_url
-import cloudinary.uploader
 from datetime import timedelta
-# from cloudinary.utils import cloudinary_url
-
-# # Configuration       
-# cloudinary.config( 
-#     cloud_name = config('CLOUD_NAME'), 
-#     api_key =  config('API_KEY'), 
-#     api_secret =  config('o49ij_yue1_hrlFrW04RvfHjgFw'), # Click 'View API Keys' above to copy your API secret
-#     secure=True
-# )
-
-# # Upload an image
-# upload_result = cloudinary.uploader.upload("https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg",
-#                                            public_id="shoes")
-# print(upload_result["secure_url"])
-
-# # Optimize delivery by resizing and applying auto-format and auto-quality
-# optimize_url, _ = cloudinary_url("shoes", fetch_format="auto", quality="auto")
-# print(optimize_url)
-
-# # Transform the image: auto-crop to square aspect_ratio
-# auto_crop_url, _ = cloudinary_url("shoes", width=500, height=500, crop="auto", gravity="auto")
-# print(auto_crop_url)
-
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-3&4@wrp4_8_$2ddwkgo=yjqzs&e3y2#9n0t9hphtxt=@q557*j'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-### if ready to deploy then DEBUG should be false
-# ALLOWED_HOSTS = [".vercel.app","127.0.0.1"]
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com", "http://127.0.0.1:8000"]
+CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com", "http://127.0.0.1:8000", "http://localhost:5173"]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+CORS_ALLOW_CREDENTIALS = True
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -52,6 +26,7 @@ AUTH_USER_MODEL = 'users.User'
 
 INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -66,13 +41,14 @@ INSTALLED_APPS = [
     'job_seeker',
     'employer',
     'payments', 
-    'users',
+    'users.apps.UsersConfig',
     "debug_toolbar",
     'django_filters',
 ]
 
 MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -118,36 +94,40 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-
-DATABASES = {
-    'default': dj_database_url.config(
-        default='postgresql://job_board_db_hgj0_user:0whDe0joLxUnki3kE8HUN3PyQSdrZWoe@dpg-d45opu0dl3ps738irvi0-a.oregon-postgres.render.com/job_board_db_hgj0',
-        conn_max_age=600
-    )
-}
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': config('DB_NAME'),
-#         'USER': config('DB_USER'),
-#         'PASSWORD': config('DB_PASSWORD'),
-#         'HOST': config('DB_HOST'),
-#         'PORT': config('DB_PORT')
-#     }
-# }
 
 
 
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
+from pathlib import Path
+import os
+
+# Build paths
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Check if we're in production (Render) or local development
+if os.environ.get('RENDER'):
+    # Production database (Render)
+    
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=config('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+    DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
+else:
+    # Local development database (SQLite)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+
+
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -165,8 +145,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
+
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -182,6 +161,7 @@ INTERNAL_IPS = [
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+DOMAIN = config('FRONTEND_URL', default='localhost:5173')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -209,8 +189,8 @@ DJOSER = {
     'USER_ID_FIELD': 'id',
     'LOGIN_FIELD': 'email',
     'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
-    'ACTIVATION_URL': 'activate/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': True,
+    'ACTIVATION_URL': 'users/activate/{uid}/{token}' ,
+    'SEND_ACTIVATION_EMAIL': False,  # Disabled - using custom signal instead
     'SERIALIZERS': {
         'user_create': 'users.serializers.UserCreateSerializer',
         'user': 'users.serializers.UserSerializer',
@@ -237,6 +217,3 @@ EMAIL_PORT = config('EMAIL_PORT')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
-RAZORPAY_KEY_ID = config('RAZORPAY_KEY_ID', default='')
-RAZORPAY_KEY_SECRET = config('RAZORPAY_KEY_SECRET', default='')
-RAZORPAY_WEBHOOK_SECRET = config('RAZORPAY_WEBHOOK_SECRET', default='')
