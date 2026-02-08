@@ -11,15 +11,6 @@ from .serializers import OrderSerializer, PremiumFeatureSerializer, SelectedFeat
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def initiate_payment(request):
-    # Debug logging
-    print(f"DEBUG: Request method: {request.method}")
-    print(f"DEBUG: Request data: {request.data}")
-    print(f"DEBUG: Query params: {request.query_params}")
-    print(f"DEBUG: Content-Type: {request.content_type}")
-    print(f"DEBUG: User: {request.user}")
-    print(f"DEBUG: Is authenticated: {request.user.is_authenticated}")
-    print(f"DEBUG: Auth header: {request.META.get('HTTP_AUTHORIZATION', 'Not present')}")
-    
     user = request.user
     # Accept frontend's actual field names
     plan_id = request.data.get("plan_id")
@@ -41,14 +32,12 @@ def initiate_payment(request):
             "help": "Format: 'Authorization: JWT <your_token>'"
         }, status=status.HTTP_401_UNAUTHORIZED)
     
-    print(f"DEBUG: About to create order for user {user.id} with amount {amount}")
     try:
         order = Order.objects.create(
             user=user,
             amount=amount,
             status='Pending'
         )
-        print(f"DEBUG: Order created successfully: {order.id}")
     except Exception as e:
         print(f"ERROR: Failed to create order: {str(e)}")
         print(f"ERROR: Exception type: {type(e).__name__}")
@@ -101,12 +90,9 @@ def initiate_payment(request):
     post_body['ship_city'] = post_body['cus_city']
     post_body['ship_country'] = post_body['cus_country']
     post_body['ship_postcode'] = "1000"
-
-    print(f"DEBUG: SSLCommerz Post Body: {post_body}")
     
     try:
         response = sslcz.createSession(post_body)  # API response
-        print(f"DEBUG: SSLCommerz Response: {response}")
     except Exception as e:
         print(f"ERROR: SSLCommerz call failed: {str(e)}")
         import traceback
