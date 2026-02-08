@@ -6,14 +6,17 @@ from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer,
 
 
 class UserCreateSerializer(BaseUserCreateSerializer):
-    class Meta(BaseUserCreateSerializer.Meta):
+    class Meta:
+        model = User
         fields = ('id', 'email', 'password', 'first_name', 'last_name')
-        
+
 
 class UserSerializer(BaseUserSerializer):
-    class Meta(BaseUserSerializer.Meta):
+    class Meta:
+        model = User
         ref_name = 'CustomUser'
-        fields = ('id', 'email', 'first_name', 'last_name')
+        fields = ('id', 'email', 'first_name', 'last_name', 'is_staff')
+        read_only_fields = ('is_staff',)
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -27,7 +30,6 @@ class ResendActivationSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
     def validate_email(self, value):
-        from .models import User
         try:
             user = User.objects.get(email=value)
             if user.is_active:

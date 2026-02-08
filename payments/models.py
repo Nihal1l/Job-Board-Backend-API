@@ -1,48 +1,51 @@
 from django.db import models
-from django.contrib.auth import get_user_model
-from django.utils import timezone
 from django.conf import settings
-import uuid 
+import uuid
 
-User = get_user_model()
+class Order(models.Model):
+    STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Ready To Ship', 'Ready To Ship'),
+        ('Failed', 'Failed'),
+        ('Cancelled', 'Cancelled'),
+    )
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Order {self.id} for {self.user.email}"
+
 
 class PremiumFeature(models.Model):
-    """Define available premium features"""
-
-    id = models.BigAutoField(primary_key=True)
-
-
-    FEATURE_TYPES = [
-        ('featured_listing', 'Featured Job Listing'),
-        ('advanced_tools', 'Advanced Recruitment Tools'),
-        ('bulk_posting', 'Bulk Job Posting'),
-        ('analytics', 'Advanced Analytics'),
-    ]
-    name = models.CharField(max_length=200, blank=True,default='null')
-    feature_type = models.CharField(max_length=50, choices=FEATURE_TYPES)
-    description = models.TextField()
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    duration_days = models.IntegerField(help_text="Duration in days (0 for one-time)")
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        ordering = ['price']
-    
+    description = models.TextField()
+    is_recommended = models.BooleanField(default=False)
+    icon_type = models.CharField(max_length=50, default='basic') # e.g., 'basic', 'pro', 'premium'
+
     def __str__(self):
-        return f"{self.name} - ₹{self.price}"
+        return self.name
+
+
+class FeatureItem(models.Model):
+    premium_feature = models.ForeignKey(PremiumFeature, on_delete=models.CASCADE, related_name='items')
+    text = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.premium_feature.name} - {self.text}"
+
 
 class SelectedFeature(models.Model):
-    """Model to retrieve a specific premium feature"""
-    id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='selected_features')
     feature = models.ForeignKey(PremiumFeature, on_delete=models.CASCADE)
-    purchaser = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    purchased_at = models.DateTimeField(default=timezone.now, null=True, blank=True)
-    
-    class Meta:
-        unique_together = ('feature', 'purchaser')
+    order = models.OneToOneField(Order, on_delete=models.SET_NULL, null=True, blank=True)
+    purchased_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Selected Feature: {self.feature.name}"
-    
-
+        return f"{self.user.email} - {self.feature.name}"

@@ -1,49 +1,26 @@
-# ============================================
-# Serializers (payments/serializers.py)
-# ============================================
-
 from rest_framework import serializers
-from .models import PremiumFeature, SelectedFeature
-from job_seeker.serializers import SimpleUserSerializer
+from .models import Order, PremiumFeature, FeatureItem, SelectedFeature
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = '__all__'
+
+class FeatureItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FeatureItem
+        fields = ['id', 'text']
 
 class PremiumFeatureSerializer(serializers.ModelSerializer):
-
+    items = FeatureItemSerializer(many=True, read_only=True)
+    
     class Meta:
         model = PremiumFeature
-        fields = '__all__'
-        read_only_fields = ['name', 'created_at']    
-
-class addFeatureSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField()
-    
-    class Meta:
-        model = SelectedFeature
-        fields = ['id', 'feature', 'purchaser', 'user']
-        read_only_fields = ['id', 'purchaser', 'user', 'feature']  # Make feature read-only
-    
-    def get_user(self, obj):
-        return SimpleUserSerializer(obj.purchaser).data
-    
-    def create(self, validated_data):
-        feature_id = self.context.get('feature_id')
-        
-        if not feature_id:
-            raise serializers.ValidationError("Feature ID is required")
-        
-        # Get the purchaser from context
-        purchaser = self.context['request'].user
-        
-        # Create the SelectedFeature with feature_id
-        return SelectedFeature.objects.create(
-            feature_id=feature_id,  # Use feature_id directly
-            purchaser=purchaser
-        )  
+        fields = ['id', 'name', 'price', 'description', 'is_recommended', 'icon_type', 'items']
 
 class SelectedFeatureSerializer(serializers.ModelSerializer):
+    feature_name = serializers.CharField(source='feature.name', read_only=True)
+    
     class Meta:
         model = SelectedFeature
-        fields = ['id', 'feature', 'purchaser']
-        # read_only_fields = ['id', 'feature', 'purchaser']
-
-
-
+        fields = ['id', 'user', 'feature', 'feature_name', 'order', 'purchased_at', 'is_active']

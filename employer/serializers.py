@@ -52,6 +52,8 @@ class JobSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
         slug_field='name', 
         queryset=JobCategory.objects.all(),
+        required=False,
+        allow_null=True,
         help_text="Select a Job Category"
     )
     user = serializers.SerializerMethodField(method_name='get_user')

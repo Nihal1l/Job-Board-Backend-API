@@ -1,13 +1,9 @@
-# ============================================
-# STEP 7: URLs (payments/urls.py)
-# ============================================
-
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-
-router = DefaultRouter()
-
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('initiate/', views.initiate_payment, name='initiate_payment'),
+    path('success/', views.payment_success, name='payment_success'),
+    path('fail/', views.payment_fail, name='payment_fail'),
+    path('cancel/', views.payment_cancel, name='payment_cancel'),
 ]

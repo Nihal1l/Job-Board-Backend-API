@@ -5,9 +5,11 @@ from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
+BACKEND_URL = config('BACKEND_URL', default='http://127.0.0.1:8000')
 
+SSLCOMMERZ_STORE_ID = config('SSLCOMMERZ_STORE_ID', default='phima67ddc8dba290b')
+SSLCOMMERZ_STORE_PASS = config('SSLCOMMERZ_STORE_PASS', default='phima67ddc8dba290b@ssl')
 SECRET_KEY = 'django-insecure-3&4@wrp4_8_$2ddwkgo=yjqzs&e3y2#9n0t9hphtxt=@q557*j'
 DEBUG = True
 
@@ -77,7 +79,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'job_board.wsgi.application'
+WSGI_APPLICATION = 'job_board.wsgi.app'
 
 
 # Database

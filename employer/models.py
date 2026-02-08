@@ -6,9 +6,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import send_mail
-from employer.models import *
+# Removed circular imports
 from users.models import User
-from job_seeker.models import *
 
 
 class JobCategory(models.Model):
@@ -40,7 +39,8 @@ class Job(models.Model):
         JobCategory, 
         on_delete=models.SET_NULL, 
         null=True, 
-        related_name='jobs'
+        related_name='jobs',
+        blank=True
     )
     
     # Basic Information
@@ -82,7 +82,7 @@ class Review(models.Model):
 
 @receiver(post_save, sender=Job)
 def notify_employer_on_applied_a_candidate(sender, instance, created, **kwargs):
-    if created:
+    if created and instance.user and instance.user.email:
         employer_email = instance.user.email
         job_title = instance.title
         

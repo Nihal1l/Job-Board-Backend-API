@@ -6,9 +6,7 @@ from django.conf import settings
 from django.db.models.signals import post_save, pre_save, m2m_changed, post_delete
 from django.dispatch import receiver
 from django.core.mail import send_mail
-from employer.models import *
-from users.models import *
-from job_seeker.models import *
+# Removed circular imports
 
 
 
@@ -55,7 +53,7 @@ class appliedJobs(models.Model):
 
 @receiver(post_save, sender=appliedJobs)
 def notify_applicant_on_apply(sender, instance, created, **kwargs):
-    if created:
+    if created and instance.user and instance.user.email:
         applicant_email = instance.user.email
         job_title = instance.job.title
         company_name = instance.job.company.name if hasattr(instance.job, 'company') else 'the company'
