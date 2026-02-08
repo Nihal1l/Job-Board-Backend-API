@@ -1,30 +1,59 @@
+"""
+Django settings for job_board project.
+"""
+
 from pathlib import Path
 from decouple import config
 import dj_database_url
 from datetime import timedelta
+import os
 
+# Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ==============================================
+# ENVIRONMENT & SECURITY SETTINGS
+# ==============================================
+
+# Detect production environment
+IS_PRODUCTION = os.environ.get('VERCEL') or os.environ.get('RENDER')
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-3&4@wrp4_8_$2ddwkgo=yjqzs&e3y2#9n0t9hphtxt=@q557*j')
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = config('DEBUG', default=True, cast=bool)
+
+# Allowed hosts
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',') if config('ALLOWED_HOSTS', default=None) else ['*']
+
+# Frontend and Backend URLs
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 BACKEND_URL = config('BACKEND_URL', default='http://127.0.0.1:8000')
 
-SSLCOMMERZ_STORE_ID = config('SSLCOMMERZ_STORE_ID', default='phima67ddc8dba290b')
-SSLCOMMERZ_STORE_PASS = config('SSLCOMMERZ_STORE_PASS', default='phima67ddc8dba290b@ssl')
-SECRET_KEY = 'django-insecure-3&4@wrp4_8_$2ddwkgo=yjqzs&e3y2#9n0t9hphtxt=@q557*j'
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com", "http://127.0.0.1:8000", "http://localhost:5173"]
+# CSRF & CORS Settings
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.vercel.app",
+    "https://*.onrender.com",
+    "http://127.0.0.1:8000",
+    "http://localhost:5173",
+    BACKEND_URL,
+    FRONTEND_URL,
+]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    FRONTEND_URL,
 ]
 CORS_ALLOW_CREDENTIALS = True
 
+# Custom User Model
 AUTH_USER_MODEL = 'users.User'
 
-# Application definition
+# ==============================================
+# APPLICATION DEFINITION
+# ==============================================
 
 INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
@@ -37,22 +66,24 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'djoser',
-    'drf_yasg', 
+    'drf_yasg',
     'api',
     'job_board',
     'job_seeker',
     'employer',
-    'payments', 
+    'payments',
     'users.apps.UsersConfig',
-    "debug_toolbar",
     'django_filters',
 ]
 
+# Add debug toolbar only in development
+if DEBUG and not IS_PRODUCTION:
+    INSTALLED_APPS.append('debug_toolbar')
+
 MIDDLEWARE = [
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -61,12 +92,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Add debug toolbar middleware only in development
+if DEBUG and not IS_PRODUCTION:
+    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
+
 ROOT_URLCONF = 'job_board.urls'
-import os
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,47 +114,25 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'job_board.wsgi.app'
+WSGI_APPLICATION = 'job_board.wsgi.application'
 
+# ==============================================
+# DATABASE CONFIGURATION
+# ==============================================
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+DATABASE_URL = config('DATABASE_URL', default=None)
 
-# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-STATICFILES_DIRS = [
-    BASE_DIR / 'static'
-]
-STATIC_URL = 'static/'
-MEDIA_URL = '/media/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-MEDIA_ROOT = BASE_DIR / 'media'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-
-
-
-
-from pathlib import Path
-import os
-
-# Build paths
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Check if we're in production (Render) or local development
-if os.environ.get('RENDER'):
-    # Production database (Render)
-    
+if DATABASE_URL:
+    # Production: Use PostgreSQL (Neon/Render/Vercel)
     DATABASES = {
         'default': dj_database_url.config(
-            default=config('DATABASE_URL'),
+            default=DATABASE_URL,
             conn_max_age=600,
             conn_health_checks=True,
         )
     }
-    DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
 else:
-    # Local development database (SQLite)
+    # Local Development: Use SQLite
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -127,9 +140,9 @@ else:
         }
     }
 
-
-
-
+# ==============================================
+# PASSWORD VALIDATION
+# ==============================================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -146,59 +159,101 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-
+# ==============================================
+# INTERNATIONALIZATION
+# ==============================================
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
+# ==============================================
+# STATIC & MEDIA FILES
+# ==============================================
 
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static'] if (BASE_DIR / 'static').exists() else []
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-DOMAIN = config('FRONTEND_URL', default='localhost:5173')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# WhiteNoise Static Files Storage
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# ==============================================
+# CLOUDINARY CONFIGURATION (Optional)
+# ==============================================
+# Uncomment if using Cloudinary for media storage
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# CLOUDINARY_STORAGE = {
+#     'CLOUD_NAME': config('CLOUD_NAME'),
+#     'API_KEY': config('CLOUDINARY_API_KEY'),
+#     'API_SECRET': config('CLOUDINARY_API_SECRET'),
+# }
+
+# ==============================================
+# DEBUG TOOLBAR (Development Only)
+# ==============================================
+
+if DEBUG and not IS_PRODUCTION:
+    INTERNAL_IPS = [
+        "127.0.0.1",
+        "localhost",
+    ]
+
+# ==============================================
+# REST FRAMEWORK CONFIGURATION
+# ==============================================
 
 REST_FRAMEWORK = {
     'COERCE_DECIMAL_TO_STRING': False,
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    # 'DEFAULT_RENDERER_CLASSES': [
-    #     'rest_framework.renderers.JSONRenderer',
-    #     'rest_framework.renderers.BrowsableAPIRenderer',
-    # ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ],
 }
+
+# ==============================================
+# JWT CONFIGURATION
+# ==============================================
 
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('JWT',),
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
 }
+
+# ==============================================
+# DJOSER CONFIGURATION
+# ==============================================
+
+DOMAIN = config('FRONTEND_URL', default='localhost:5173').replace('https://', '').replace('http://', '')
 
 DJOSER = {
     'USER_ID_FIELD': 'id',
     'LOGIN_FIELD': 'email',
     'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
-    'ACTIVATION_URL': 'users/activate/{uid}/{token}' ,
-    'SEND_ACTIVATION_EMAIL': False,  # Disabled - using custom signal instead
+    'ACTIVATION_URL': 'users/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': False,  # Using custom signal instead
     'SERIALIZERS': {
         'user_create': 'users.serializers.UserCreateSerializer',
         'user': 'users.serializers.UserSerializer',
         'current_user': 'users.serializers.UserSerializer'
     },
 }
+
+# ==============================================
+# SWAGGER/API DOCUMENTATION
+# ==============================================
 
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
@@ -211,11 +266,45 @@ SWAGGER_SETTINGS = {
     }
 }
 
+# ==============================================
+# EMAIL CONFIGURATION
+# ==============================================
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = config('EMAIL_HOST')
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
-EMAIL_PORT = config('EMAIL_PORT')
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 
+# ==============================================
+# PAYMENT GATEWAY (SSLCommerz)
+# ==============================================
+
+SSLCOMMERZ_STORE_ID = config('SSLCOMMERZ_STORE_ID', default='')
+SSLCOMMERZ_STORE_PASS = config('SSLCOMMERZ_STORE_PASS', default='')
+SSLCOMMERZ_IS_SANDBOX = config('SSLCOMMERZ_IS_SANDBOX', default=True, cast=bool)
+
+# ==============================================
+# DEFAULT AUTO FIELD
+# ==============================================
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ==============================================
+# PRODUCTION SECURITY SETTINGS
+# ==============================================
+
+if IS_PRODUCTION:
+    # Security settings for production
+    SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=True, cast=bool)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    
+    # HSTS Settings
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True

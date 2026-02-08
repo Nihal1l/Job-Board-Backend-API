@@ -1,0 +1,46 @@
+# Old Database Configuration
+# DB_NAME=gym_database_457r
+# DB_USER=gym_database_457r_user
+# DB_PASSWORD=uR9KOpLwvBFyTNmNMEnw7yf8NLbjwKkh
+# DB_HOST=dpg-d5kgo5hr0fns73beh6tg-a
+# DB_PORT=5432
+# DATABASE_URL=postgresql://gym_database_457r_user:uR9KOpLwvBFyTNmNMEnw7yf8NLbjwKkh@dpg-d5kgo5hr0fns73beh6tg-a/gym_database_457r
+
+# Recommended for most uses
+DATABASE_URL=postgresql://neondb_owner:npg_cBOrl9efk4Xi@ep-soft-unit-ai9slpzw-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require
+
+# For uses requiring a connection without pgbouncer
+DATABASE_URL_UNPOOLED=postgresql://neondb_owner:npg_cBOrl9efk4Xi@ep-soft-unit-ai9slpzw.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require
+
+# Parameters for constructing your own connection string
+PGHOST=ep-soft-unit-ai9slpzw-pooler.c-4.us-east-1.aws.neon.tech
+PGHOST_UNPOOLED=ep-soft-unit-ai9slpzw.c-4.us-east-1.aws.neon.tech
+PGUSER=neondb_owner
+PGDATABASE=neondb
+PGPASSWORD=npg_cBOrl9efk4Xi
+
+# Parameters for Vercel Postgres Templates
+POSTGRES_URL=postgresql://neondb_owner:npg_cBOrl9efk4Xi@ep-soft-unit-ai9slpzw-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require
+POSTGRES_URL_NON_POOLING=postgresql://neondb_owner:npg_cBOrl9efk4Xi@ep-soft-unit-ai9slpzw-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require
+POSTGRES_USER=neondb_owner
+POSTGRES_HOST=ep-soft-unit-ai9slpzw-pooler.c-4.us-east-1.aws.neon.tech
+POSTGRES_PASSWORD=npg_cBOrl9efk4Xi
+POSTGRES_DATABASE=neondb
+POSTGRES_URL_NO_SSL=postgresql://neondb_owner:npg_cBOrl9efk4Xi@ep-soft-unit-ai9slpzw-pooler.c-4.us-east-1.aws.neon.tech/neondb
+POSTGRES_PRISMA_URL=postgresql://neondb_owner:npg_cBOrl9efk4Xi@ep-soft-unit-ai9slpzw-pooler.c-4.us-east-1.aws.neon.tech/neondb?connect_timeout=15&sslmode=require
+
+
+CLOUD_NAME=deprrqhpk
+API_KEY=459693965352159
+API_SECRET=o49ij_yue1_hrlFrW04RvfHjgFw
+API_ENVIRONMENT_VARIABLE=CLOUDINARY_URL=cloudinary://459693965352159:o49ij_yue1_hrlFrW04RvfHjgFw@deprrqhpk
+
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=p.b.nihalcse1@gmail.com
+EMAIL_HOST_PASSWORD=tbfr alzi ztuf suhb
+SSLCOMMERZ_STORE_ID=dd6987a0bdee57a
+SSLCOMMERZ_STORE_PASS=dd6987a0bdee57a@ssl
+BACKEND_URL=https://job-board-backend-api.vercel.app/
+FRONTEND_URL=https://job-board-frontend-lime.vercel.app/
