@@ -56,6 +56,8 @@ AUTH_USER_MODEL = 'users.User'
 # ==============================================
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     "whitenoise.runserver_nostatic",
     'corsheaders',
     'django.contrib.admin',
@@ -72,6 +74,7 @@ INSTALLED_APPS = [
     'job_seeker',
     'employer',
     'payments',
+    'chat',
     'users.apps.UsersConfig',
     'django_filters',
 ]
@@ -115,6 +118,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'job_board.wsgi.application'
+ASGI_APPLICATION = 'job_board.asgi.application'
+
+# ==============================================
+# CHANNELS CONFIGURATION
+# ==============================================
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
 
 # ==============================================
 # DATABASE CONFIGURATION

@@ -32,5 +32,6 @@ urlpatterns = [
     path('', include(job_router.urls)),
     path('auth/users/resend_activation/', ResendActivationView.as_view(), name='resend_activation'),
     path('auth/', include('djoser.urls')),
-    path('auth/', include('djoser.urls.jwt'))
+    path('auth/', include('djoser.urls.jwt')),
+    path('chat/', include('chat.urls')),
 ]
