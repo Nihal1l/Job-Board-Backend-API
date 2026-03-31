@@ -26,6 +26,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 # Allowed hosts
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',') if config('ALLOWED_HOSTS', default=None) else ['*']
+ALLOWED_HOSTS.append('.onrender.com')  # Auto-allow all render domains
 
 # Frontend and Backend URLs
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
