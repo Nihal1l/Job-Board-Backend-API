@@ -1,0 +1,10 @@
+set -o errexit
+
+echo "Installing requirements..."
+pip install -r requirements.txt
+
+echo "Running collectstatic..."
+python manage.py collectstatic --noinput
+
+echo "Running database migrations..."
+python manage.py migrate
