@@ -311,6 +311,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 if IS_PRODUCTION:
     # Security settings for production
+    # Tell Django that Render's proxy terminates SSL
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=True, cast=bool)
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
