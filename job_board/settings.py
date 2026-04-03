@@ -30,7 +30,8 @@ ALLOWED_HOSTS.append('.onrender.com')  # Auto-allow all render domains
 
 # Frontend and Backend URLs
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
-BACKEND_URL = config('BACKEND_URL', default='http://127.0.0.1:8000')
+# Prefer RENDER_EXTERNAL_URL provided by Render, fallback to env, then localhost
+BACKEND_URL = os.environ.get('RENDER_EXTERNAL_URL') or config('BACKEND_URL', default='http://127.0.0.1:8000')
 
 # CSRF & CORS Settings
 CSRF_TRUSTED_ORIGINS = [
