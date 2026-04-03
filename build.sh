@@ -8,3 +8,6 @@ python manage.py collectstatic --noinput
 
 echo "Running database migrations..."
 python manage.py migrate
+
+echo "Initializing groups and permissions..."
+python manage.py initialize_groups
