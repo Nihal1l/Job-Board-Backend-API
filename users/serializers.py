@@ -8,15 +8,15 @@ from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer,
 class UserCreateSerializer(BaseUserCreateSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'password', 'first_name', 'last_name')
+        fields = ('id', 'email', 'password', 'first_name', 'last_name', 'is_staff')
 
 
 class UserSerializer(BaseUserSerializer):
     class Meta:
         model = User
         ref_name = 'CustomUser'
-        fields = ('id', 'email', 'first_name', 'last_name', 'is_staff')
-        read_only_fields = ('is_staff',)
+        fields = ('id', 'email', 'first_name', 'last_name', 'is_staff', 'role')
+        read_only_fields = ('is_staff', 'role')
 
 
 class ProfileSerializer(serializers.ModelSerializer):

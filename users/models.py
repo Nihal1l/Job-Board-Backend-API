@@ -41,6 +41,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=150, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    role = models.CharField(
+        max_length=20,
+        choices=[('job_seeker', 'Job Seeker'), ('employer', 'Employer')],
+        default='job_seeker'
+    )
     date_joined = models.DateTimeField(default=timezone.now)
 
     USERNAME_FIELD = 'email'        # ✅ Use email as username

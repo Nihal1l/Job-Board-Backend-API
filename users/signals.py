@@ -4,7 +4,7 @@ apps/users/signals.py
 ===========================================
 """
 
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from .models import User
 from django.contrib.auth.models import Group
@@ -12,10 +12,49 @@ from django.contrib.auth.models import Group
 from .utils import send_activation_helper
 
 
+@receiver(pre_save, sender=User)
+def set_user_role(sender, instance, **kwargs):
+    """Automatically set user role based on is_staff during registration/save"""
+    if instance.is_staff:
+        instance.role = 'employer'
+    else:
+        instance.role = 'job_seeker'
+
+
 @receiver(post_save, sender=User)
 def send_activation_email(sender, instance, created, **kwargs):
     if created:
         send_activation_helper(instance)
+
+
+@receiver(post_save, sender=User)
+def assign_user_to_group(sender, instance, created, **kwargs):
+    """Assign user to appropriate Django Group and grant group permissions explicitly"""
+    if instance.is_active:
+        try:
+            if instance.is_staff:
+                target_group = Group.objects.get(name='Employer')
+                remove_group = Group.objects.get(name='Job_Seeker')
+            else:
+                target_group = Group.objects.get(name='Job_Seeker')
+                remove_group = Group.objects.get(name='Employer')
+            
+            # Add to the correct group
+            if not instance.groups.filter(name=target_group.name).exists():
+                instance.groups.add(target_group)
+            
+            # Remove from the other group to ensure they only have one role
+            if instance.groups.filter(name=remove_group.name).exists():
+                instance.groups.remove(remove_group)
+                
+            # Explicitly grant the group's permissions to the user object
+            # This makes them visible in the "Chosen permissions" box in the Django Admin
+            group_permissions = target_group.permissions.all()
+            instance.user_permissions.set(group_permissions)
+                
+        except Group.DoesNotExist:
+            # Silently fail if groups are not created yet, or log it if needed
+            print(f"WARNING: Group 'Employer' or 'Job_Seeker' does not exist in the database.")
 
 
 # @receiver(post_save, sender=User)
